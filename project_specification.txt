@@ -1,0 +1,215 @@
+### **Project Specification: Campus Expense & Study Planner (AI-Assisted Development)**
+
+### 1\. Introduction & Project Goal
+
+This document outlines the requirements for a "Campus Expense & Study Planner" web application. The goal is to generate the full-stack foundation for this app using AI-assisted development.
+
+The primary goal of this prompt is to instruct an AI code assistant (like Cursor) to generate the complete project scaffolding, including a multi-page frontend, robust user authentication, and the backend database schema.
+
+### 2\. Core Application Features
+
+The completed application foundation will include the following features:
+
+  * **User Authentication:**
+      * User registration (using Supabase Auth).
+      * User login/logout functionality.
+      * Protected routes for all user-specific pages (Dashboard, Expenses, Study).
+  * **Page Navigation:**
+      * A public-facing `HomePage` (landing page).
+      * An `AuthPage` for both login and signup.
+      * A private `DashboardPage` as the main landing area for logged-in users.
+      * A private `ExpenseTrackerPage` (placeholder).
+      * A private `StudyPlannerPage` (placeholder).
+  * **Core Logic (Placeholders):**
+      * Establish the pages where expense and study planning logic will live.
+      * Connect all pages with a persistent navigation bar.
+
+### 3\. User Roles within the Application
+
+  * **Registered User:** Can log in, access their private dashboard, and (eventually) manage their own expenses and study plans.
+  * **Anonymous User (Guest):** Can only view the public `HomePage` and the `AuthPage` (for login/signup).
+
+### 4\. Chosen Technology Stack
+
+  * **Framework:** React (bootstrapped with **Vite**)
+  * **Language:** **TypeScript**
+  * **Database & Auth:** **Supabase**
+  * **Routing:** `react-router-dom`
+  * **Styling:** **Tailwind CSS**
+
+-----
+
+### 5\. AI Prompt: Implementation Plan & Code Generation
+
+Please generate the following.
+
+#### 5.1. Supabase Database Schema
+
+Generate the SQL commands to run in the Supabase SQL Editor to create the necessary tables.
+
+```sql
+-- 1. Create a table for user profiles, linked to auth.users
+-- This will store user-specific data like their allowance
+CREATE TABLE profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  weekly_allowance NUMERIC(10, 2) DEFAULT 0
+);
+
+-- 2. Create the expenses table
+CREATE TABLE expenses (
+  id BIGSERIAL PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  category TEXT NOT NULL,
+  amount NUMERIC(10, 2) NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 3. Create the study planner table
+CREATE TABLE study_items (
+  id BIGSERIAL PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  subject TEXT NOT NULL,
+  time_details TEXT, -- e.g., "7PM Monday" or "3 hours"
+  is_completed BOOLEAN DEFAULT false,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 4. Enable Row Level Security (RLS) on all tables
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE expenses ENABLE ROW LEVEL SECURITY;
+ALTER TABLE study_items ENABLE ROW LEVEL SECURITY;
+
+-- 5. Create RLS policies
+-- Users can only see/edit their own profile
+CREATE POLICY "User can view/manage their own profile" ON profiles
+  FOR ALL USING (auth.uid() = id);
+
+-- Users can only see/manage their own expenses
+CREATE POLICY "User can view/manage their own expenses" ON expenses
+  FOR ALL USING (auth.uid() = user_id);
+
+-- Users can only see/manage their own study items
+CREATE POLICY "User can view/manage their own study items" ON study_items
+  FOR ALL USING (auth.uid() = user_id);
+```
+
+#### 5.2. Project Scaffolding (Vite + TS)
+
+Generate the commands to:
+
+1.  Create a new React + TypeScript project using **Vite**.
+2.  Install the required dependencies: `react-router-dom`, `@supabase/supabase-js`, `tailwindcss`, `postcss`, `autoprefixer`.
+3.  Initialize Tailwind CSS by generating `tailwind.config.js` and `postcss.config.js` and updating `index.css`.
+
+#### 5.3. Project File Structure
+
+Generate the following file structure within the `src/` directory:
+
+```
+src/
+├── components/
+│   ├── Layout.tsx
+│   ├── Navbar.tsx
+│   └── ProtectedRoute.tsx
+├── context/
+│   └── AuthContext.tsx
+├── lib/
+│   └── supabaseClient.ts
+├── pages/
+│   ├── AuthPage.tsx
+│   ├── DashboardPage.tsx
+│   ├── ExpenseTrackerPage.tsx
+│   ├── HomePage.tsx
+│   └── StudyPlannerPage.tsx
+├── App.tsx
+├── index.css
+├── main.tsx
+└── (vite-env.d.ts, etc.)
+```
+
+#### 5.4. Key File Specifications
+
+Generate the complete code for each of these files.
+
+1.  **`src/lib/supabaseClient.ts`**
+
+      * Initialize and export the Supabase client.
+      * Use `import.meta.env` for the environment variables (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`).
+
+2.  **`src/context/AuthContext.tsx`**
+
+      * Create a React Context to manage and provide the Supabase `Session` object.
+      * Create an `AuthProvider` component that listens to `supabase.auth.onAuthStateChange` and updates a `session` state.
+      * Provide the `session` and `loading` state to its children.
+      * Create a `useAuth` hook to easily consume the context.
+
+3.  **`src/main.tsx`**
+
+      * Import `AuthProvider`.
+      * Set up `createBrowserRouter` from `react-router-dom`.
+      * Define all the routes for the application (see `App.tsx` for structure).
+      * Wrap the entire app in the `AuthProvider`.
+
+4.  **`src/App.tsx`**
+
+      * This component will define the route structure.
+      * Use `createBrowserRouter` here (or in `main.tsx`) to define the routes.
+      * **Public Routes:**
+          * `/` (element: `<HomePage />`)
+          * `/login` (element: `<AuthPage />`)
+      * **Private Routes:**
+          * Create a root private route element: `<ProtectedRoute><Layout /></ProtectedRoute>`.
+          * This route will have `children` routes:
+              * `/dashboard` (element: `<DashboardPage />`)
+              * `/expenses` (element: `<ExpenseTrackerPage />`)
+              * `/study` (element: `<StudyPlannerPage />`)
+
+5.  **`src/components/Layout.tsx`**
+
+      * The main wrapper for all logged-in pages.
+      * Renders the `Navbar` component at the top.
+      * Renders the `Outlet` from `react-router-dom` to display the active child page.
+
+6.  **`src/components/Navbar.tsx`**
+
+      * A responsive navbar using Tailwind CSS.
+      * Use `NavLink` for "Dashboard", "Expenses", and "Study Planner".
+      * Must include a "Sign Out" button.
+      * The "Sign Out" button should be asynchronous and call `supabase.auth.signOut()`.
+
+7.  **`src/components/ProtectedRoute.tsx`**
+
+      * A critical component for security.
+      * It should use the `useAuth` hook to get the `session` and `loading` state.
+      * If `loading`, show a loading spinner.
+      * If **no** `session`, use `Maps` to redirect the user to `/login`.
+      * If a `session` *exists*, render the `children` (or `<Outlet />`).
+
+8.  **`src/pages/HomePage.tsx`**
+
+      * A simple, stylish landing page using Tailwind.
+      * Should have a title, description, and `Link` buttons to "Get Started" (points to `/login` or `/dashboard` if logged in) and "Login".
+
+9.  **`src/pages/AuthPage.tsx`**
+
+      * The most complex component. It must handle **both Login and Sign Up**.
+      * Use a state variable (`isLogin`) to toggle between the forms.
+      * **Sign Up Form:** Takes `email`, `password`. Calls `supabase.auth.signUp()`.
+      * **Login Form:** Takes `email`, `password`. Calls `supabase.auth.signInWithPassword()`.
+        Also include **"Sign in with Google"** as an OAuth option.
+      * Show loading states on buttons and display error messages from Supabase.
+      * Use `useNavigate` to redirect to `/dashboard` on success.
+      * Use the `useAuth` hook to check if a user is already logged in; if so, redirect to `/dashboard` immediately.
+
+10. **`src/pages/DashboardPage.tsx`**
+
+      * A placeholder page.
+      * Use the `useAuth` hook to get the `session` and greet the user: "Welcome, {session.user.email}".
+
+11. **`src/pages/ExpenseTrackerPage.tsx`**
+
+      * A placeholder page with an `<h1>`: "Expense Tracker".
+
+12. **`src/pages/StudyPlannerPage.tsx`**
+
+      * A placeholder page with an `<h1>`: "Study Planner".
