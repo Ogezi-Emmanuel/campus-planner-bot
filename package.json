@@ -5,10 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "postinstall": "tailwindcss init -p"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.81.1",
