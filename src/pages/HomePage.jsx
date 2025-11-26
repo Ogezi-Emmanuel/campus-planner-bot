@@ -43,7 +43,7 @@ const HomePage = () => {
               CampusPlanner helps you manage expenses, track study progress, and organize campus life — all in one clean interface.
             </p>
             <div className="mt-6 flex gap-3 animate-fade-in-up animation-delay-400">
-              <Link to="/auth" className="btn-primary">Get Started</Link>
+              <Link to="/auth?form=signup" className="btn-primary">Get Started</Link>
               <a href="#demo" className="btn-secondary" aria-label="View interactive demo">View Demo</a>
             </div>
           </div>

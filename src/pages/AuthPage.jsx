@@ -25,6 +25,8 @@ const AuthPage = () => {
     const queryParams = new URLSearchParams(window.location.search);
     if (queryParams.get('type') === 'password-reset') {
       setIsPasswordReset(true);
+    } else if (queryParams.get('form') === 'signup') {
+      setIsSignUp(true);
     }
   }, [user, navigate]);
 
@@ -261,6 +263,34 @@ const AuthPage = () => {
         )}
 
         {message && <p className="mt-4 text-center text-accent text-sm">{message}</p>}
+
+        {!isPasswordReset && !showForgotPassword && (
+          <div className="text-center mt-4">
+            {isSignUp ? (
+              <p className="text-text">
+                Already have an account? {' '}
+                <button
+                  type="button"
+                  onClick={() => setIsSignUp(false)}
+                  className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                >
+                  Sign In
+                </button>
+              </p>
+            ) : (
+              <p className="text-text">
+                Don't have an account? {' '}
+                <button
+                  type="button"
+                  onClick={() => setIsSignUp(true)}
+                  className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                >
+                  Sign Up
+                </button>
+              </p>
+            )}
+          </div>
+        )}
       </div>
     </div>
 );
