@@ -13,7 +13,7 @@ const ProtectedRoute = ({ children }) => {
   }, [user, loading, navigate]);
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen text-xl bg-color-background text-color-text">Loading...</div>;
+    return <div className="flex justify-center items-center h-screen text-xl bg-background text-text">Loading...</div>;
   }
 
   if (!user) {

@@ -93,18 +93,18 @@ const StudyPlannerPage = () => {
     }
   };
 
-  if (loading) return <div className="text-center mt-8 text-color-text bg-color-background min-h-screen flex items-center justify-center font-roboto">Loading study items...</div>;
-  if (error) return <div className="text-center mt-8 text-red-500 bg-color-background min-h-screen flex items-center justify-center font-roboto">Error: {error}</div>;
+  if (loading) return <div className="text-center mt-8 text-text bg-background min-h-screen flex items-center justify-center font-roboto">Loading study items...</div>;
+  if (error) return <div className="text-center mt-8 text-accent bg-background min-h-screen flex items-center justify-center font-roboto">Error: {error}</div>;
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl bg-color-background text-color-text font-roboto">
-      <h1 className="text-4xl font-extrabold text-color-primary mb-8 text-center">Study Planner</h1>
+    <div className="container mx-auto px-4 py-8 max-w-4xl bg-background text-text font-roboto">
+      <h1 className="text-4xl font-extrabold text-primary mb-8 text-center">Study Planner</h1>
 
       <section className="card mb-8">
-        <h2 className="text-2xl font-semibold text-color-text mb-6">Add New Study Item</h2>
+        <h2 className="text-2xl font-semibold text-text mb-6">Add New Study Item</h2>
         <form onSubmit={handleAddStudyItem} className="space-y-6">
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-color-text-light mb-1">Title</label>
+            <label htmlFor="title" className="block text-sm font-medium text-lightText mb-1">Title</label>
             <input
               type="text"
               id="title"
@@ -117,7 +117,7 @@ const StudyPlannerPage = () => {
             />
           </div>
           <div>
-            <label htmlFor="subject" className="block text-sm font-medium text-color-text-light mb-1">Subject</label>
+            <label htmlFor="subject" className="block text-sm font-medium text-lightText mb-1">Subject</label>
             <input
               type="text"
               id="subject"
@@ -130,7 +130,7 @@ const StudyPlannerPage = () => {
             />
           </div>
           <div>
-            <label htmlFor="dueDate" className="block text-sm font-medium text-color-text-light mb-1">Due Date</label>
+            <label htmlFor="dueDate" className="block text-sm font-medium text-lightText mb-1">Due Date</label>
             <input
               type="date"
               id="dueDate"
@@ -146,16 +146,16 @@ const StudyPlannerPage = () => {
       </section>
 
       <section className="card">
-        <h2 className="text-2xl font-semibold text-color-text mb-6">Your Study Items</h2>
+        <h2 className="text-2xl font-semibold text-text mb-6">Your Study Items</h2>
         {studyItems.length === 0 ? (
-          <p className="text-color-text-light">No study items planned yet. Add one above!</p>
+          <p className="text-lightText">No study items planned yet. Add one above!</p>
         ) : (
           <ul className="space-y-4">
             {studyItems.map((item) => (
-              <li key={item.id} className={`card flex flex-col sm:flex-row justify-between items-start sm:items-center ${item.status === 'completed' ? 'line-through text-color-text-light' : ''}`}>
+              <li key={item.id} className={`card flex flex-col sm:flex-row justify-between items-start sm:items-center ${item.status === 'completed' ? 'line-through text-lightText' : ''}`}>
                 <div className="mb-2 sm:mb-0">
-                  <p className="font-medium text-lg text-color-text">{item.title}</p>
-                  <p className="text-sm text-color-text-light">{item.subject} - Due: {new Date(item.due_date || item.dueDate).toLocaleDateString()}</p>
+                  <p className="font-medium text-lg text-text">{item.title}</p>
+                  <p className="text-sm text-lightText">{item.subject} - Due: {new Date(item.due_date || item.dueDate).toLocaleDateString()}</p>
                 </div>
                 <button
                   onClick={() => handleMarkComplete(item.id, item.status)}

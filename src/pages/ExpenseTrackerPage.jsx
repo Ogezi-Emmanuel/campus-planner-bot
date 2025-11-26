@@ -234,25 +234,25 @@ const ExpenseTrackerPage = () => {
   }, [userId]);
 
   return (
-    <div className="min-h-screen bg-color-background text-color-text flex flex-col items-center py-10 px-4 font-roboto">
-      <h1 className="text-4xl font-extrabold text-color-primary mb-8">Expense Tracker</h1>
+    <div className="min-h-screen bg-background text-text flex flex-col items-center py-10 px-4 font-roboto">
+      <h1 className="text-4xl font-extrabold text-primary mb-8">Expense Tracker</h1>
 
       {/* Weekly Allowance Section */}
       <section className="card w-full max-w-md mb-8 space-y-4">
-        <h2 className="text-2xl font-bold text-color-text">Weekly Allowance</h2>
+        <h2 className="text-2xl font-bold text-text">Weekly Allowance</h2>
         {allowanceLoading ? (
-          <p className="text-color-text-light">Loading allowance...</p>
+          <p className="text-lightText">Loading allowance...</p>
         ) : !allowanceSupported ? (
           <div className="space-y-2">
-            <p className="text-color-text-light">Weekly allowance is not configured in your database. Please add the column to the <span className="font-semibold">profiles</span> table to enable this feature.</p>
-            <p className="text-sm text-color-text-light">We will save your allowance locally on this device in the meantime.</p>
+            <p className="text-lightText">Weekly allowance is not configured in your database. Please add the column to the <span className="font-semibold">profiles</span> table to enable this feature.</p>
+            <p className="text-sm text-lightText">We will save your allowance locally on this device in the meantime.</p>
           </div>
         ) : (
           <div className="space-y-3">
-            <p className="text-color-text">Current allowance: <span className="font-semibold text-color-primary">CFA {weeklyAllowance.toFixed(2)}</span></p>
+            <p className="text-text">Current allowance: <span className="font-semibold text-primary">CFA {weeklyAllowance.toFixed(2)}</span></p>
             <form onSubmit={saveAllowance} className="space-y-3">
               <div>
-                <label htmlFor="allowance" className="block text-color-text-light text-sm font-medium mb-1">Set Allowance (CFA)</label>
+                <label htmlFor="allowance" className="block text-text-light text-sm font-medium mb-1">Set Allowance (CFA)</label>
                 <input
                   type="number"
                   id="allowance"
@@ -273,7 +273,7 @@ const ExpenseTrackerPage = () => {
       {/* Add Expense Form */}
       <form onSubmit={addExpense} className="card w-full max-w-md mb-8 space-y-6">
         <div>
-          <label htmlFor="itemName" className="block text-color-text-light text-sm font-medium mb-1">Item Name</label>
+          <label htmlFor="itemName" className="block text-text-light text-sm font-medium mb-1">Item Name</label>
           <input
             type="text"
             id="itemName"
@@ -284,7 +284,7 @@ const ExpenseTrackerPage = () => {
           />
         </div>
         <div>
-          <label htmlFor="amount" className="block text-color-text-light text-sm font-medium mb-1">Amount (CFA)</label>
+          <label htmlFor="amount" className="block text-text-light text-sm font-medium mb-1">Amount (CFA)</label>
           <input
             type="number"
             id="amount"
@@ -305,16 +305,16 @@ const ExpenseTrackerPage = () => {
 
       {/* Expenses List */}
       <div className="card w-full max-w-md">
-        <h2 className="text-2xl font-bold text-color-text mb-4">Expenses</h2>
-        {error && <p className="text-red-500 mb-2">{error}</p>}
+        <h2 className="text-2xl font-bold text-text mb-4">Expenses</h2>
+        {error && <p className="text-accent mb-2">{error}</p>}
         {expenses.length === 0 ? (
-          <p className="text-color-text-light">No expenses added yet.</p>
+          <p className="text-text-light">No expenses added yet.</p>
         ) : (
           <ul>
             {expenses.map((expense) => (
-              <li key={expense.id} className="flex justify-between items-center border-b border-color-border py-3 last:border-b-0">
-                <span className="text-color-text text-lg">{expense.item_name}</span>
-                <span className="text-color-text-light text-lg">{`CFA ${Number(expense.amount).toFixed(2)}`}</span>
+              <li key={expense.id} className="flex justify-between items-center border-b border-border py-3 last:border-b-0">
+                <span className="text-text text-lg">{expense.item_name}</span>
+                <span className="text-text-light text-lg">{`CFA ${Number(expense.amount).toFixed(2)}`}</span>
               </li>
             ))}
           </ul>

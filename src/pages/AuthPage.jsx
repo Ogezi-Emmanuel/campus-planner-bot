@@ -78,7 +78,7 @@ const AuthPage = () => {
             <input
               type="email"
               id="email"
-              className="mt-1 block w-full rounded-lg border border-gray-300 bg-white/80 text-text placeholder-gray-400 px-4 py-2 shadow-sm focus:ring-2 focus:ring-primary focus:border-primary/60"
+              className="mt-1 block w-full rounded-lg border border-border bg-background/80 text-text placeholder-lightText px-4 py-2 shadow-sm focus:ring-2 focus:ring-primary focus:border-primary/60"
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -90,7 +90,7 @@ const AuthPage = () => {
             <input
               type="password"
               id="password"
-              className="mt-1 block w-full rounded-lg border border-gray-300 bg-white/80 text-text placeholder-gray-400 px-4 py-2 shadow-sm focus:ring-2 focus:ring-primary focus:border-primary/60"
+              className="mt-1 block w-full rounded-lg border border-border bg-background/80 text-text placeholder-lightText px-4 py-2 shadow-sm focus:ring-2 focus:ring-primary focus:border-primary/60"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -109,13 +109,13 @@ const AuthPage = () => {
         <div className="relative flex justify-center text-sm my-4">
           <span className="px-4 bg-background text-text">Or continue with</span>
           <div className="absolute inset-y-0 left-0 right-0 flex items-center">
-            <div className="w-full border-t border-gray-200"></div>
+            <div className="w-full border-t border-border"></div>
           </div>
         </div>
 
         <button
           onClick={handleGoogleSignIn}
-          className="w-full flex items-center justify-center py-3 px-4 rounded-lg border border-gray-300 bg-white/80 text-text hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+          className="w-full flex items-center justify-center py-3 px-4 rounded-lg border border-border bg-background/80 text-text hover:bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
         >
           <img src="/google-icon.svg" alt="Google icon" className="h-5 w-5 mr-3" />
           Sign {isSignUp ? 'up' : 'in'} with Google
@@ -131,7 +131,7 @@ const AuthPage = () => {
           </button>
         </p>
 
-        {message && <p className="mt-4 text-center text-red-600 text-sm">{message}</p>}
+        {message && <p className="mt-4 text-center text-accent text-sm">{message}</p>}
       </div>
     </div>
 );

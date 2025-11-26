@@ -24,8 +24,8 @@ class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex flex-col items-center justify-center p-6 text-color-text bg-color-background">
-          <h1 className="text-3xl font-bold text-color-primary mb-2">Something went wrong</h1>
+        <div className="min-h-screen flex flex-col items-center justify-center p-6 text-text bg-background">
+          <h1 className="text-3xl font-bold text-primary mb-2">Something went wrong</h1>
           <p className="mb-4">An unexpected error occurred. Please try again.</p>
           <button className="btn-primary" onClick={this.handleRetry}>Retry</button>
         </div>

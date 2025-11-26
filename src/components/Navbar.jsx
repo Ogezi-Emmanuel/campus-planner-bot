@@ -14,7 +14,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-background/70 backdrop-blur-md border-b border-gray-200">
+    <nav className="sticky top-0 z-50 bg-background/70 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Brand */}
@@ -54,7 +54,14 @@ const Navbar = () => {
                   >
                     Study Planner
                   </NavLink>
-                  {/* Hide About when authenticated */}
+                  <NavLink
+                    to="/about"
+                    className={({ isActive }) =>
+                      `nav-link ${isActive ? 'nav-link-active' : ''}`
+                    }
+                  >
+                    About
+                  </NavLink>
                   <button
                     onClick={handleSignOut}
                     className="btn-primary ml-2"
@@ -84,7 +91,7 @@ const Navbar = () => {
             <button
               onClick={() => setIsOpen(!isOpen)}
               type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary"
+              className="inline-flex items-center justify-center p-2 rounded-md text-lightText hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary"
               aria-controls="mobile-menu"
               aria-expanded={isOpen}
             >
@@ -113,7 +120,7 @@ const Navbar = () => {
                   <NavLink to="/dashboard" className={({ isActive }) => `block rounded-md ${isActive ? 'nav-link nav-link-active' : 'nav-link'}`}>Dashboard</NavLink>
                   <NavLink to="/expenses" className={({ isActive }) => `block rounded-md ${isActive ? 'nav-link nav-link-active' : 'nav-link'}`}>Expenses</NavLink>
                   <NavLink to="/study-planner" className={({ isActive }) => `block rounded-md ${isActive ? 'nav-link nav-link-active' : 'nav-link'}`}>Study Planner</NavLink>
-                  {/* Hide About when authenticated */}
+                  <NavLink to="/about" className={({ isActive }) => `block rounded-md ${isActive ? 'nav-link nav-link-active' : 'nav-link'}`}>About</NavLink>
                   <button onClick={handleSignOut} className="btn-primary w-full text-center">Sign Out</button>
                 </>
               ) : (

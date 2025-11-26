@@ -44,7 +44,7 @@
 
   --text-light: #e0e0e0;
   --text-dark: #212121;
-  --background-light: #ffffff;
+  --background-light: #FFFFFF;
   --background-dark: #121212;
   --border-light: #e0e0e0;
   --border-dark: #424242;
@@ -62,7 +62,7 @@
   line-height: 24px;
   font-weight: 400;
 
-  color-scheme: light dark;
+  color-scheme: light;
   color: var(--color-text);
   background-color: var(--color-background);
 
@@ -74,11 +74,12 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-text: var(--text-light);
-    --color-background: var(--background-dark);
-    --color-border: var(--border-dark);
+    /* Force light theme regardless of OS preference to ensure white background */
+    --color-text: var(--text-dark);
+    --color-background: var(--background-light);
+    --color-border: var(--border-light);
     --color-primary: var(--primary-900);
-    --color-secondary: var(--secondary-900);
+    --color-secondary: var(--secondary-500);
     --color-accent: var(--accent-700);
   }
 }
@@ -116,7 +117,7 @@ a:hover {
 body {
   margin: 0;
   display: flex;
-  place-items: center;
+  place-items: initial;
   min-width: 320px;
   min-height: 100vh;
   background-color: var(--color-background);
@@ -128,17 +129,17 @@ body {
 }
 
 /* Buttons */
-.btn-primary { background-color: var(--color-primary); color: white; padding: 0.625rem 1rem; border-radius: 0.5rem; font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.06); transition: transform .05s, background-color .2s, box-shadow .2s; }
-.btn-primary:hover { background-color: var(--primary-700); }
+.btn-primary { background-color: var(--color-primary); color: var(--text-light); padding: 0.625rem 1rem; border-radius: 0.5rem; font-weight: 600; box-shadow: 0 2px 5px rgba(0,0,0,0.08); transition: transform .05s, box-shadow .2s, background-color .2s, color .2s; }
+.btn-primary:hover { background-color: var(--primary-700); color: var(--text-light); box-shadow: 0 4px 10px rgba(0,0,0,0.12); }
 .btn-primary:active { transform: translateY(1px); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
 
-.btn-secondary { background-color: transparent; color: var(--color-primary); padding: 0.625rem 1rem; border-radius: 0.5rem; font-weight: 600; border: 1px solid var(--color-primary); transition: transform .05s, color .2s, background-color .2s, border-color .2s; }
-.btn-secondary:hover { background-color: rgba(0,0,0,0.03); border-color: var(--primary-700); color: var(--primary-700); }
+.btn-secondary { background-color: transparent; color: var(--color-accent); padding: 0.625rem 1rem; border-radius: 0.5rem; font-weight: 600; border: 1px solid var(--color-accent); transition: transform .05s, color .2s, background-color .2s, border-color .2s; }
+.btn-secondary:hover { background-color: rgba(0,0,0,0.03); border-color: var(--accent-600); color: var(--accent-600); }
 .btn-secondary:active { transform: translateY(1px); }
 
 .nav-link { color: var(--color-text); padding: 0.5rem 0.75rem; border-radius: 0.5rem; transition: color .2s, background-color .2s; }
 .nav-link:hover { color: var(--color-primary); background-color: rgba(0,0,0,0.03); }
-.nav-link-active { color: var(--color-primary); background-color: rgba(0,0,0,0.05); }
+.nav-link-active { color: var(--color-accent); background-color: rgba(0,0,0,0.05); }
 
 /* Cards & Sections */
 .card { background-color: var(--color-background); border: 1px solid var(--color-border); border-radius: 0.75rem; padding: 1.25rem; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04); }
@@ -152,6 +153,7 @@ body {
 
 .border-color-border { border-color: var(--color-border); }
 .border-color-primary { border-color: var(--color-primary); }
+.border-color-accent { border-color: var(--color-accent); }
 
 .bg-color-background { background-color: var(--color-background); }
 .bg-color-primary { background-color: var(--color-primary); }
@@ -174,7 +176,7 @@ body {
 @media (min-width: 640px) { :root { --footer-height: 96px; } }
 @media (min-width: 1024px) { :root { --footer-height: 104px; } }
 
-.app-footer { position: fixed; bottom: 0; left: 0; right: 0; background-color: var(--color-background); color: var(--color-text); border-top: 1px solid var(--color-border); padding: 0.75rem 1rem; z-index: 40; backdrop-filter: blur(4px); }
+.app-footer { position: static; background-color: var(--color-background); color: var(--color-text); border-top: 1px solid var(--color-border); padding: 0.75rem 1rem; }
 .app-footer .footer-inner { max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 0.5rem; }
 
 .app-footer .footer-section { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.75rem; }
@@ -188,3 +190,35 @@ body {
 .app-footer .footer-social svg { width: 20px; height: 20px; fill: currentColor; }
 
 @media (min-width: 640px) { .app-footer { padding: 0.75rem 1.25rem; } .app-footer .footer-inner { flex-direction: row; gap: 1rem; } .app-footer .footer-bottom { text-align: right; } }
+
+/* Hero overlay gradient utility to replace linted class */
+.hero-gradient-overlay { 
+  background: linear-gradient(to top, rgba(255,255,255,0.7), rgba(255,255,255,0.4), rgba(255,255,255,0));
+}
+
+/* Reduced motion: disable animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in-up,
+  .animation-delay-100,
+  .animation-delay-200,
+  .animation-delay-300,
+  .animation-delay-400,
+  .animation-delay-600 {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Simple fade-in-up animation */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translate3d(0, 8px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+.animate-fade-in-up { animation: fadeInUp 450ms ease-out both; will-change: transform, opacity; }
+.animation-delay-100 { animation-delay: 100ms; }
+.animation-delay-200 { animation-delay: 200ms; }
+.animation-delay-300 { animation-delay: 300ms; }
+.animation-delay-400 { animation-delay: 400ms; }
+.animation-delay-600 { animation-delay: 600ms; }
+.animation-delay-200 { animation-delay: 200ms; }
+.animation-delay-400 { animation-delay: 400ms; }

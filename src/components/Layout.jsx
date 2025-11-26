@@ -42,11 +42,11 @@ const Footer = () => {
 const Layout = () => {
   const { user } = useAuth();
   const location = useLocation();
-  const shouldShowFooter = location.pathname === '/' || !user;
+  const shouldShowFooter = false;
   return (
-    <div className="min-h-screen flex flex-col bg-color-background text-color-text">
+    <div className="min-h-screen flex flex-col bg-background text-text">
       <Navbar />
-      <main className="flex-grow container mx-auto px-4 py-8 max-w-7xl" style={{ paddingBottom: 'var(--footer-height)' }}>
+      <main className="grow container mx-auto px-4 py-8 max-w-7xl">
         <Outlet />
       </main>
       {shouldShowFooter && <Footer />}

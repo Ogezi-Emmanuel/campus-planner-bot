@@ -23,12 +23,12 @@ const RouteErrorElement = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-color-background">
+    <div className="min-h-screen flex items-center justify-center p-6 bg-background">
       <div className="card max-w-xl w-full">
-        <h1 className="text-2xl font-bold text-color-primary mb-2">{title}</h1>
-        <p className="text-color-text mb-4">{message}</p>
+        <h1 className="text-2xl font-bold text-primary mb-2">{title}</h1>
+        <p className="text-text mb-4">{message}</p>
         {details && (
-          <pre className="text-xs bg-color-muted p-3 rounded overflow-auto">
+          <pre className="text-xs bg-background p-3 rounded overflow-auto">
             {details}
           </pre>
         )}
