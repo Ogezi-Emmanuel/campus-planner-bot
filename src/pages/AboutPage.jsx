@@ -7,11 +7,7 @@ const AboutPage = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!loading && user) {
-      navigate('/dashboard');
-    }
-  }, [user, loading, navigate]);
+  // Removed useEffect that redirects authenticated users to dashboard
 
   if (loading) {
     return (
@@ -21,12 +17,10 @@ const AboutPage = () => {
     );
   }
 
-  if (user) {
-    return null;
-  }
+  // Removed conditional rendering that returns null if user is logged in
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-3xl card text-center">
         <h1 className="text-4xl font-extrabold text-primary mb-6">About CampusPlanner</h1>
         <p className="text-lg text-text leading-relaxed mb-4">

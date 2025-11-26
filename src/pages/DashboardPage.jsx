@@ -12,63 +12,79 @@ const DashboardPage = () => {
   const [usdToXofRate, setUsdToXofRate] = useState(null);
 
   useEffect(() => {
-    if (user) {
-      fetchDashboardData();
-    } else {
-      setLoading(false);
-      setError('User not authenticated');
-    }
-  }, [user]);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const rate = await getUsdToXofRate();
-        setUsdToXofRate(rate);
-      } catch (_) {}
-    })();
-  }, []);
-
-  const fetchDashboardData = async () => {
-    try {
+    const fetchAllDashboardData = async () => {
       setLoading(true);
+      setError(null);
+
       if (!user) {
         setError('User not authenticated');
         setLoading(false);
         return;
       }
 
-      // Fetch expenses
-      const { data: expensesData, error: expensesError } = await supabase
-        .from('expenses')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('date', { ascending: false })
-        .limit(5); // Limit to 5 recent expenses
+      try {
+        // Fetch USD to XOF rate
+        const rate = await getUsdToXofRate();
+        setUsdToXofRate(rate);
 
-      if (expensesError) throw expensesError;
-      setExpenses(expensesData);
+        // Fetch expenses
+        const { data: expensesData, error: expensesError } = await supabase
+          .from('expenses')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('date', { ascending: false })
+          .limit(5);
 
-      // Fetch study items
-      const { data: studyItemsData, error: studyItemsError } = await supabase
-        .from('study_items')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('due_date', { ascending: true })
-        .limit(5); // Limit to 5 upcoming study items
+        if (expensesError) throw expensesError;
+        setExpenses(expensesData);
 
-      if (studyItemsError) throw studyItemsError;
-      setStudyItems(studyItemsData);
+        // Fetch study items
+        const { data: studyItemsData, error: studyItemsError } = await supabase
+          .from('study_items')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('due_date', { ascending: true })
+          .limit(5);
 
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+        if (studyItemsError) throw studyItemsError;
+        setStudyItems(studyItemsData);
+
+      } catch (err) {
+        console.error("Dashboard data fetch error:", err);
+        setError(err.message || 'Failed to fetch dashboard data.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchAllDashboardData();
     }
-  };
+  }, [user]);
 
-  if (loading) return <div className="text-center mt-8 text-lg">Loading dashboard data...</div>;
-  if (error) return <div className="text-center mt-8 text-lg text-accent">Error: {error}</div>;
+  const renderLoadingState = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="card animate-pulse">
+        <div className="h-6 bg-lightText rounded w-3/4 mb-5"></div>
+        <div className="space-y-4">
+          <div className="h-12 bg-lightText rounded"></div>
+          <div className="h-12 bg-lightText rounded"></div>
+          <div className="h-12 bg-lightText rounded"></div>
+        </div>
+      </div>
+      <div className="card animate-pulse">
+        <div className="h-6 bg-lightText rounded w-3/4 mb-5"></div>
+        <div className="space-y-4">
+          <div className="h-12 bg-lightText rounded"></div>
+          <div className="h-12 bg-lightText rounded"></div>
+          <div className="h-12 bg-lightText rounded"></div>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (loading) return renderLoadingState();
+  if (error) return <div className="text-center mt-8 text-lg text-accent p-4 card">Error: {error}</div>;
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
@@ -78,7 +94,7 @@ const DashboardPage = () => {
         <section className="card">
           <h2 className="text-2xl font-semibold text-text mb-5">Recent Expenses</h2>
           {expenses.length === 0 ? (
-            <p className="text-lightText">No recent expenses. Add some in the Expense Tracker!</p>
+            <p className="text-lightText">No recent expenses. <a href="/expense-tracker" className="text-primary hover:underline">Add some in the Expense Tracker!</a></p>
           ) : (
             <ul className="space-y-4">
               {expenses.map((expense) => (
@@ -87,7 +103,7 @@ const DashboardPage = () => {
                     <p className="font-medium text-lg text-text">{expense.item_name || 'No name'}</p>
                     <p className="text-sm text-lightText">{expense.category} - {new Date(expense.date).toLocaleDateString()}</p>
                   </div>
-                  <p className="font-bold text-primary text-xl">{`CFA ${Number(expense.amount).toFixed(2)}`}</p>
+                  <p className="font-bold text-primary text-xl">{usdToXofRate ? toCFA(expense.amount, usdToXofRate) : `$${Number(expense.amount).toFixed(2)}`}</p>
                 </li>
               ))}
             </ul>
@@ -97,14 +113,14 @@ const DashboardPage = () => {
         <section className="card">
           <h2 className="text-2xl font-semibold text-text mb-5">Upcoming Study Items</h2>
           {studyItems.length === 0 ? (
-            <p className="text-lightText">No upcoming study items. Plan some in the Study Planner!</p>
+            <p className="text-lightText">No upcoming study items. <a href="/study-planner" className="text-primary hover:underline">Plan some in the Study Planner!</a></p>
           ) : (
             <ul className="space-y-4">
               {studyItems.map((item) => (
                 <li key={item.id} className={`card flex justify-between items-center ${item.status === 'completed' ? 'line-through text-lightText' : ''}`}>
                   <div>
                     <p className="font-medium text-lg text-text">{item.title}</p>
-                    <p className="text-sm text-lightText">{item.subject} - Due: {new Date(item.dueDate).toLocaleDateString()}</p>
+                    <p className="text-sm text-lightText">{item.subject} - Due: {new Date(item.due_date).toLocaleDateString()}</p>
                   </div>
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${item.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-primary text-accent'}`}>
                     {item.status === 'completed' ? 'Completed' : 'Pending'}

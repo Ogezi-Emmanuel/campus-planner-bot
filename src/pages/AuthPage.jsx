@@ -9,6 +9,11 @@ const AuthPage = () => {
   const [password, setPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
   const [message, setMessage] = useState(null);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isPasswordReset, setIsPasswordReset] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
 
   const { user, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
@@ -16,6 +21,10 @@ const AuthPage = () => {
   useEffect(() => {
     if (user) {
       navigate('/dashboard');
+    }
+    const queryParams = new URLSearchParams(window.location.search);
+    if (queryParams.get('type') === 'password-reset') {
+      setIsPasswordReset(true);
     }
   }, [user, navigate]);
 
@@ -48,13 +57,80 @@ const AuthPage = () => {
     }
   };
 
-  const handleGoogleSignIn = async () => {
+  const handleForgotPassword = async (event) => {
+    event.preventDefault();
     setLoading(true);
     setMessage(null);
+
     try {
-      await signInWithGoogle();
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth?type=password-reset`,
+      });
+
+      if (error) {
+        throw error;
+      }
+      setMessage('Check your email for a password reset link!');
+      setShowForgotPassword(false);
     } catch (error) {
-      setMessage(error.message);
+      setMessage(error.error_description || error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const validatePassword = (password) => {
+    if (password.length < 8) {
+      return 'Password must be at least 8 characters long.';
+    }
+    if (!/[A-Z]/.test(password)) {
+      return 'Password must contain at least one uppercase letter.';
+    }
+    if (!/[a-z]/.test(password)) {
+      return 'Password must contain at least one lowercase letter.';
+    }
+    if (!/[0-9]/.test(password)) {
+      return 'Password must contain at least one number.';
+    }
+    if (!/[^A-Za-z0-9]/.test(password)) {
+      return 'Password must contain at least one special character.';
+    }
+    return ''; // No error
+  };
+
+  const handlePasswordUpdate = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    setMessage(null);
+    setPasswordError('');
+
+    if (newPassword !== confirmPassword) {
+      setMessage('Passwords do not match!');
+      setLoading(false);
+      return;
+    }
+
+    const validationMessage = validatePassword(newPassword);
+    if (validationMessage) {
+      setPasswordError(validationMessage);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (error) {
+        throw error;
+      }
+      setMessage('Password updated successfully! You can now sign in.');
+      setIsPasswordReset(false);
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error) {
+      setMessage(error.error_description || error.message);
     } finally {
       setLoading(false);
     }
@@ -65,71 +141,124 @@ const AuthPage = () => {
       <div className="w-full max-w-md card space-y-6">
         <div className="text-center">
           <h2 className="text-3xl sm:text-4xl font-extrabold text-primary mb-2">
-            {isSignUp ? 'Create an Account' : 'Welcome Back'}
+            {isPasswordReset ? 'Set New Password' : (showForgotPassword ? 'Reset Your Password' : (isSignUp ? 'Create an Account' : 'Welcome Back'))}
           </h2>
           <p className="text-text text-base">
-            {isSignUp ? 'Join CampusPlanner today!' : 'Sign in to continue to CampusPlanner'}
+            {isPasswordReset ? 'Enter your new password.' : (showForgotPassword ? 'Enter your email to receive a password reset link.' : (isSignUp ? 'Join CampusPlanner today!' : 'Sign in to continue to CampusPlanner'))}
           </p>
         </div>
 
-        <form onSubmit={handleAuth} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-text mb-1">Email</label>
-            <input
-              type="email"
-              id="email"
-              className="mt-1 block w-full rounded-lg border border-border bg-background/80 text-text placeholder-lightText px-4 py-2 shadow-sm focus:ring-2 focus:ring-primary focus:border-primary/60"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-text mb-1">Password</label>
-            <input
-              type="password"
-              id="password"
-              className="mt-1 block w-full rounded-lg border border-border bg-background/80 text-text placeholder-lightText px-4 py-2 shadow-sm focus:ring-2 focus:ring-primary focus:border-primary/60"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            className="btn-primary w-full"
-            disabled={loading}
-          >
-            {loading ? 'Loading...' : (isSignUp ? 'Sign Up' : 'Sign In')}
-          </button>
-        </form>
-
-        <div className="relative flex justify-center text-sm my-4">
-          <span className="px-4 bg-background text-text">Or continue with</span>
-          <div className="absolute inset-y-0 left-0 right-0 flex items-center">
-            <div className="w-full border-t border-border"></div>
-          </div>
-        </div>
-
-        <button
-          onClick={handleGoogleSignIn}
-          className="w-full flex items-center justify-center py-3 px-4 rounded-lg border border-border bg-background/80 text-text hover:bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-        >
-          <img src="/google-icon.svg" alt="Google icon" className="h-5 w-5 mr-3" />
-          Sign {isSignUp ? 'up' : 'in'} with Google
-        </button>
-
-        <p className="text-center text-sm text-text">
-          {isSignUp ? 'Already have an account?' : 'Don\'t have an account?'}{' '}
-          <button
-            onClick={() => setIsSignUp(!isSignUp)}
-            className="font-medium text-primary hover:text-accent focus:outline-none focus:underline bg-transparent"
-          >
-            {isSignUp ? 'Sign In' : 'Sign Up'}
-          </button>
-        </p>
+        {isPasswordReset ? (
+          <form onSubmit={handlePasswordUpdate} className="space-y-4">
+            <div>
+              <label htmlFor="new-password" className="block text-sm font-medium text-text mb-1">New Password</label>
+              <input
+                type="password"
+                id="new-password"
+                className="mt-1 block w-full rounded-lg border border-border bg-background/80 text-text placeholder-lightText px-4 py-2 shadow-sm focus:ring-2 focus:ring-primary focus:border-primary/60"
+                placeholder="••••••••"
+                value={newPassword}
+                onChange={(e) => {
+                  setNewPassword(e.target.value);
+                  setPasswordError('');
+                }}
+                required
+              />
+              {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
+            </div>
+            <div>
+              <label htmlFor="confirm-password" className="block text-sm font-medium text-text mb-1">Confirm New Password</label>
+              <input
+                type="password"
+                id="confirm-password"
+                className="mt-1 block w-full rounded-lg border border-border bg-background/80 text-text placeholder-lightText px-4 py-2 shadow-sm focus:ring-2 focus:ring-primary focus:border-primary/60"
+                placeholder="••••••••"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              className="btn-primary w-full"
+              disabled={loading}
+            >
+              {loading ? 'Updating...' : 'Set New Password'}
+            </button>
+          </form>
+        ) : showForgotPassword ? (
+          <form onSubmit={handleForgotPassword} className="space-y-4">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-text mb-1">Email</label>
+              <input
+                type="email"
+                id="email"
+                className="mt-1 block w-full rounded-lg border border-border bg-background/80 text-text placeholder-lightText px-4 py-2 shadow-sm focus:ring-2 focus:ring-primary focus:border-primary/60"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              className="btn-primary w-full"
+              disabled={loading}
+            >
+              {loading ? 'Sending...' : 'Send Reset Link'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowForgotPassword(false)}
+              className="btn-secondary w-full mt-2"
+            >
+              Back to Sign In
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleAuth} className="space-y-4">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-text mb-1">Email</label>
+              <input
+                type="email"
+                id="email"
+                className="mt-1 block w-full rounded-lg border border-border bg-background/80 text-text placeholder-lightText px-4 py-2 shadow-sm focus:ring-2 focus:ring-primary focus:border-primary/60"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-text mb-1">Password</label>
+              <input
+                type="password"
+                id="password"
+                className="mt-1 block w-full rounded-lg border border-border bg-background/80 text-text placeholder-lightText px-4 py-2 shadow-sm focus:ring-2 focus:ring-primary focus:border-primary/60"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <div className="text-right mt-1">
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPassword(true)}
+                  className="text-sm font-medium text-primary hover:text-accent focus:outline-none focus:underline bg-transparent"
+                >
+                  Forgot Password?
+                </button>
+              </div>
+            </div>
+            <button
+              type="submit"
+              className="btn-primary w-full"
+              disabled={loading}
+            >
+              {loading ? 'Loading...' : (isSignUp ? 'Sign Up' : 'Sign In')}
+            </button>
+          </form>
+        )}
 
         {message && <p className="mt-4 text-center text-accent text-sm">{message}</p>}
       </div>

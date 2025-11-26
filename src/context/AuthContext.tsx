@@ -5,7 +5,6 @@ import { User } from '@supabase/supabase-js';
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -43,14 +42,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const value: AuthContextType = {
     user,
     loading,
-    signInWithGoogle: async () => {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-      });
-      if (error) {
-        console.error('Error signing in with Google:', error.message);
-      }
-    },
     signOut: async () => {
       const { error } = await supabase.auth.signOut();
       if (error) {
