@@ -38,7 +38,14 @@ const AuthPage = () => {
     try {
       let authResponse;
       if (isSignUp) {
-        authResponse = await supabase.auth.signUp({ email, password });
+        // For sign-up, send a verification email and redirect to the app's base URL
+        authResponse = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: window.location.origin, // This should ideally be your production URL
+          },
+        });
       } else {
         authResponse = await supabase.auth.signInWithPassword({ email, password });
       }
