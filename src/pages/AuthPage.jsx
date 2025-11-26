@@ -43,7 +43,7 @@ const AuthPage = () => {
           email,
           password,
           options: {
-            emailRedirectTo: window.location.origin, // This should ideally be your production URL
+            emailRedirectTo: import.meta.env.VITE_PUBLIC_BASE_URL || window.location.origin, // Use environment variable for production URL
           },
         });
       } else {
